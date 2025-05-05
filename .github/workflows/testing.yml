@@ -1,0 +1,45 @@
+name: Testing CI
+
+on:
+  push:
+    branches: ["testing"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the source code
+        uses: actions/checkout@v3
+
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_DEBUG: true
+          envkey_CELERY_BROKER: ${{ secrets.CELERY_BROKER }}
+          envkey_CELERY_BACKEND: ${{ secrets.CELERY_BACKEND }}
+          envkey_CORS_ALLOW_ALL_ORIGINS: true
+          envkey_CORS_ALLOWED_ORIGIN: ${{ secrets.CORS_ALLOWED_ORIGIN }}
+          envkey_DJANGO_SETTINGS_MODULE: "apps.core.settings"
+          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          envkey_DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
+          envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          envkey_CACHE_URL: ${{ secrets.CACHE_URL }}
+          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          envkey_RABBITMQ_DEFAULT_USER: ${{ secrets.RABBITMQ_DEFAULT_USER }}
+          envkey_RABBITMQ_DEFAULT_PASS: ${{ secrets.RABBITMQ_DEFAULT_PASS }}
+          envkey_RABBITMQ_DEFAULT_VHOST: ${{ secrets.RABBITMQ_DEFAULT_VHOST }}
+          envkey_SMS_PHONE_NUMBER: ${{ secrets.SMS_PHONE_NUMBER }}
+          envkey_SMS_CLIENT_ID: ${{ secrets.SMS_CLIENT_ID }}
+          envkey_ENV: ${{ secrets.ENV }}
+          directory: .
+          file_name: .env
+          fail_on_empty: false
+          sort_keys: false
+
+      - name: Run Project and Tests
+        run: |
+          make docker-up
+          make docker-lint
+          make docker-test
