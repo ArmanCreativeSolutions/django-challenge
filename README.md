@@ -1,38 +1,41 @@
 # django-challenge
 
-
-The volleyball Federation decided to use an online selling platform for the next season, and our company has been chosen for implementing that.
+The Volleyball Federation has decided to use an online ticket-selling platform for the upcoming season, and our company has been selected to implement it.
 
 # Requirements
 
-Our system should have REST APIs for the following tasks:
+Our system should provide REST APIs for the following tasks:
 
 - User signup and login
 - Adding a new stadium
 - Defining matches
-- Defining the place of seats for each match
-- Buying seats of a match (There is no need for using a payment gateway)
+- Defining seat arrangements for each match
+- Buying seats for a match (No payment gateway needed), with the following considerations:
+  1. **Limit Purchase per User:** A user can buy only 1 ticket per match (check for existing tickets and return `400 Bad Request` if already booked).
+  2. **Prevent Double Booking (Concurrency):** Handle high-traffic race conditions using database locks (`select_for_update()`) or distributed locks (Redis lock).
+  3. **Seat Caching:** Cache available seat maps in Redis to avoid overwhelming PostgreSQL during peak traffic.
+  4. **Prevent Duplicate Clicks (Idempotency):** Support an `Idempotency-Key` header to prevent double booking from multi-clicking.
+  5. **Safe Transactions:** Ensure all booking steps are executed inside `@transaction.atomic` for automatic rollback on failure.
 
-# Implementation details
+# Implementation Details
 
-We don't need a GUI for this system. You can use the Django admin.
-Try to write your code as **reusable** and **readable** as possible. Also, don't forget to **document your code** and clear the reasons for all your decisions in the code.
-Using API documentation tools is a plus.
-Don't forget that many people trying to buy tickets for a match. So try to implement your code in a way that could handle the load. If your solution is not sample enough for implementing fast, you can just describe it in your documents.
+We don't need a GUI for this system; you can use Django Admin.
+Try to write your code as **reusable** and **readable** as possible. Also, don't forget to **document your code** and clearly state the reasons for your design decisions.
+Using API documentation tools (e.g., Swagger/OpenAPI) is a plus.
 
-Please fork this repository and add your code to that. Don't forget that your commits are so important. So be sure that you're committing your code often with a proper commit message.
+Keep in mind that many people will try to buy tickets simultaneously. Ensure your solution can handle high traffic. If a full implementation is not simple enough to complete quickly, you can describe your proposed architecture in your documentation.
+
+Please fork this repository and submit your work via Pull Request. Commits are important to us, so make sure to commit frequently with clear, descriptive commit messages.
 
 ## We all use AI. Don't be ashamed
 
-Everyone uses AI for everything. And we expect you to do the same. AI is a big part of our development process, and we care a lot about how you use AI tools during this task.
+Everyone uses AI for development, and we expect you to do the same. AI is an integral part of our workflow, and we care about how effectively you leverage it.
 
-To earn our immunity after the AI takeover of Earth, we want to make sure you're using it properly.
-
-Add a file named "ai.md" to your project. This file should contain the following information (the more explicit, the better):
+To ensure you are using it properly, please add a file named `ai.md` to your project root containing:
 
 1. What AI tools and models did you use?
-2. Explain the different stages of software development where you used AI help. Describe how you used your tools at each stage.
-3. We want to know how you prompt. So add your prompts to this file too. For each prompt, explain which stage you used it in, how you evaluated the result, and what you did to fix any misbehavior.
-4 Explain how you monitor your token usage and what you do to manage it. Link your tools or add your helper prompts.
+2. Explain the different stages of software development where you used AI assistance and how you used them.
+3. Show us how you prompt: include your prompts, explain which stage you used them in, how you evaluated the output, and how you corrected any errors or misbehaviors.
+4. Explain how you monitor and manage your token/usage budget.
 
-*There's a sample.ai.md file in the project representing the expected template. Don't forget: "ai.md" is the only file we expect you to write entirely by yourself.*
+*You can refer to `sample.ai.md` in the repository for the expected format. Note: `ai.md` is the only file we expect you to write entirely by yourself.*
