@@ -1,0 +1,1 @@
+I mainly used ChatGPT 5 (the free version) for writing tests and setting up Docker.
